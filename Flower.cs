@@ -43,5 +43,23 @@ public class Flower : MonoBehaviour
         }
     }
 
-  
+    public float Feed(float amount)
+    {
+        float nectarTaken = Mathf.Clamp(amount, 0f, NectarAmount);
+
+        NectarAmount -= amount;
+
+        if (NectarAmount <= 0)
+        {
+            NectarAmount = 0;
+
+            flowerCollider.gameObject.setActive(false);
+            nectarCollider.gameObject.setActive(false);
+
+            flowerMaterial.SetColor("_BaseColor", emptyFlowerColor);
+        }
+
+        return nectarTaken;
+    }
+
 }
