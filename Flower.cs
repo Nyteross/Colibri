@@ -53,8 +53,8 @@ public class Flower : MonoBehaviour
         {
             NectarAmount = 0;
 
-            flowerCollider.gameObject.setActive(false);
-            nectarCollider.gameObject.setActive(false);
+            flowerCollider.gameObject.SetActive(false);
+            nectarCollider.gameObject.SetActive(false);
 
             flowerMaterial.SetColor("_BaseColor", emptyFlowerColor);
         }
@@ -66,15 +66,15 @@ public class Flower : MonoBehaviour
     {
         NectarAmount = 1f;
 
-        flowerCollider.gameObject.setActive(true);
-        nectarCollider.gameObject.setActive(true);
+        flowerCollider.gameObject.SetActive(true);
+        nectarCollider.gameObject.SetActive(true);
 
         flowerMaterial.SetColor("_BaseColor", fullFlowerColor);
     }
 
     private void Awake()
     {
-        MeshRenderer meshRenderer = GetComponent<meshRenderer>();
+        MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
         flowerMaterial = meshRenderer.material;
 
         flowerCollider = transform.Find("FlowerCollider").GetComponent<Collider>();
