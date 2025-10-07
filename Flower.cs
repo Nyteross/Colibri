@@ -62,4 +62,25 @@ public class Flower : MonoBehaviour
         return nectarTaken;
     }
 
+    public void ResetFlower()
+    {
+        NectarAmount = 1f;
+
+        flowerCollider.gameObject.setActive(true);
+        nectarCollider.gameObject.setActive(true);
+
+        flowerMaterial.SetColor("_BaseColor", fullFlowerColor);
+    }
+
+    private void Awake()
+    {
+        MeshRenderer meshRenderer = GetComponent<meshRenderer>();
+        flowerMaterial = meshRenderer.material;
+
+        flowerCollider = transform.Find("FlowerCollider").GetComponent<Collider>();
+        nectarCollider = transform.Find("FlowerNectarCollider").GetComponent<Collider>();
+
+        
+    }
+
 }
