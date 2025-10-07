@@ -44,4 +44,33 @@ public class FlowerArea : MonoBehaviour
     {
         FindChildFlowers(transform);
     }
+
+    private void FindChildFlowers(Transform parent)
+    {
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            Transform child = parent.GetChild(i);
+
+            if (child.CompareTag("flower_plant"))
+            {
+                flowerPlants.Add(child.gameObject);
+
+                FindChildFlowers(child);
+            }
+            else
+            {
+                Flower flower = child.GetComponent<Flower>();
+                if (flower != null)
+                {
+                    Flowers.Add(flower);
+
+                    nectarFlowerDictionary.Add(flower.nectarCollider, flower);
+                }
+                else
+                {
+                    FindChildFlowers(child);
+                }
+            }
+        }
+    }
 }
