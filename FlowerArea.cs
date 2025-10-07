@@ -11,4 +11,37 @@ public class FlowerArea : MonoBehaviour
     private Dictionary<Collider, Flower> nectarFlowerDictionary;
 
     public List<Flower> Flowers { get; private set; }
+
+    public void ResetFlowers()
+    {
+        foreach (GameObject flowerPlant in flowerPlants)
+        {
+            float xRotation = UnityEngine.Random.Range(-5f, 5f);
+            float yRotation = UnityEngine.Random.Range(-180f, 180f);
+            float zRotation = UnityEngine.Random.Range(-5f, 5f);
+            flowerPlant.transform.localRotation = Quaternion.Euler(xRotation, yRotation, zRotation);
+        }
+
+        foreach (Flower flower in Flowers)
+        {
+            flower.ResetFlower();
+        }
+    }
+
+    public Flower GetFlowerFromNectar(Collider collider)
+    {
+        return nectarFlowerDictionary[collider];
+    }
+
+    private void Awake()
+    {
+        flowerPlants = new List<GameObject>();
+        nectarFlowerDictionary = new Dictionary<Collider, Flower>();
+        Flowers = new List<Flower>();
+    }
+
+    private void Start()
+    {
+        FindChildFlowers(transform);
+    }
 }
