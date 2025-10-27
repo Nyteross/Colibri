@@ -158,13 +158,13 @@ public class HummingbirdAgent : Agent
         rigidbody.Sleep();
 
     }
-    
+
     public void UnfreezeAgent()
     {
         Debug.Assert(trainingMode == false, "Freeze/Unfreeze not supported in training");
         frozen = false;
         rigidbody.WakeUp();
-        
+
     }
 
     private void MoveToSafeRandomPosition(bool inFrontOfFlower)
@@ -234,4 +234,43 @@ public class HummingbirdAgent : Agent
             }
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        TriggerEnterOrStay(other);
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        TriggerEnterOrStay(other);
+    }
+
+    private void TriggerEnterOrStay(Collider collider)
+    {
+        if (collider.CompareTag("nectar"))
+        {
+            Vector3 closestPointToBeakTip = collider.ClosestPoint(beakTip.position);
+
+            if (Vector3.Distance(beakTip.position, closestPointToBeakTip) < BeakTipRadius)
+            {
+                Flower flower = flowerArea.GetFlowerFromNectar(collider);
+
+                float nectarReceived = flower.Feed(.01f);
+
+                NectarObtained += nectarReceived;
+
+                if (trainingMode)
+                {
+                    float bonus = .02f * Mathf.Clamp01(Vector3.Dot(transform.forward.normalized, -nearestFlower.FlowerUpVector.normalized));
+                    AddReward(.01f + bonus);
+
+                    if (!flower.HasNectar)
+                    {
+                        UpdateNearestFlower();
+                    }
+                }
+            }
+        }
+    }
+
 }
