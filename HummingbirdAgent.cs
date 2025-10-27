@@ -121,7 +121,7 @@ public class HummingbirdAgent : Agent
 
         sensor.AddObservation(toFlower.magnitude / FlowerArea.AreaDiameter);
     }
-    
+
     public override void Heuristic(float[] actionsOut)
     {
         Vector3 forward = Vector3.zero;
@@ -149,6 +149,22 @@ public class HummingbirdAgent : Agent
         actionsOut[2] = combined.z;
         actionsOut[3] = pitch;
         actionsOut[4] = yawx;
+    }
+
+    public void FreezeAgent()
+    {
+        Debug.Assert(trainingMode == false, "Freeze/Unfreeze not supported in training");
+        frozen = true;
+        rigidbody.Sleep();
+
+    }
+    
+    public void UnfreezeAgent()
+    {
+        Debug.Assert(trainingMode == false, "Freeze/Unfreeze not supported in training");
+        frozen = false;
+        rigidbody.WakeUp();
+        
     }
 
     private void MoveToSafeRandomPosition(bool inFrontOfFlower)
