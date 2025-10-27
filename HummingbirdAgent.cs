@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 using UnityEngine;
 
 public class HummingbirdAgent : Agent
@@ -278,6 +280,22 @@ public class HummingbirdAgent : Agent
         if (trainingMode && collision.collider.CompareTag("boundary"))
         {
             AddReward(-.5f);
+        }
+    }
+
+    private void Update()
+    {
+        if (nearestFlower != null)
+        {
+            Debug.DrawLine(beakTip.position, nearestFlower.FlowerCenterPosition, Color.green);
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (nearestFlower != null && !nearestFlower.HasNectar)
+        {
+            UpdateNearestFlower();
         }
     }
 
