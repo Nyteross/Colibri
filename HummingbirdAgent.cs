@@ -114,8 +114,29 @@ public class HummingbirdAgent : Agent
             Debug.Assert(safePositionFound, "Could not find a safe position to spawn");
 
             transform.position = potentialPosition;
-            transform.rotation = potentialRotation; 
+            transform.rotation = potentialRotation;
         }
     }
 
+
+    private void UpdateNearestFlower()
+    {
+        foreach (Flower flower in flowerArea.Flowers)
+        {
+            if (nearestFlower == null && flower.HasNectar)
+            {
+                nearestFlower = flower;
+            }
+            else if (flower.HasNectar)
+            {
+                float distanceToFlower = Vector3.Distance(flower.transform.position, beakTip.position);
+                float distanceToCurrentNearestFlower = Vector3.Distance(nearestFlower.transform.position, beakTip.position);
+
+                if (!nearestFlower.HasNectar || distanceToFlower < distanceToCurrentNearestFlower)
+                {
+                    nearestFlower = flower;
+                }
+            }
+        }
+    }
 }
