@@ -273,4 +273,12 @@ public class HummingbirdAgent : Agent
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (trainingMode && collision.collider.CompareTag("boundary"))
+        {
+            AddReward(-.5f);
+        }
+    }
+
 }
