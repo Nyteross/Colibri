@@ -99,7 +99,7 @@ public class HummingbirdAgent : Agent
 
 
     }
-    
+
     public override void CollectObservations(VectorSensor sensor)
     {
 
@@ -120,6 +120,35 @@ public class HummingbirdAgent : Agent
         sensor.AddObservation(Vector3.Dot(beakTip.forward.normalized, -nearestFlower.FlowerUpVector.normalized));
 
         sensor.AddObservation(toFlower.magnitude / FlowerArea.AreaDiameter);
+    }
+    
+    public override void Heuristic(float[] actionsOut)
+    {
+        Vector3 forward = Vector3.zero;
+        Vector3 left = Vector3.zero;
+        Vector3 up = Vector3.zero;
+        float pitch = 0f;
+        float yaw = 0f;
+
+        if (Input.GetKey(KeyCode.W)) forward = transform.forward;
+        else if (Input.GetKey(KeyCode.S)) forward = -transform.forward;
+
+        if (Input.GetKey(KeyCode.A)) left = transform.right;
+        else if (Input.GetKey(KeyCode.D)) left = -transform.right;
+
+        if (Input.GetKey(KeyCode.E)) up = transform.up;
+        else if (Input.GetKey(KeyCode.C)) up = -transform.up;
+
+        if (Input.GetKey(KeyCode.UpArrow)) pitch = 1f;
+        else if (Input.GetKey(KeyCode.DownArrow)) pitch = -1f;
+
+        Vector3 combined = (forward + left + up).normalized;
+
+        actionsOut[0] = combined.x;
+        actionsOut[1] = combined.y;
+        actionsOut[2] = combined.z;
+        actionsOut[3] = pitch;
+        actionsOut[4] = yawx;
     }
 
     private void MoveToSafeRandomPosition(bool inFrontOfFlower)
