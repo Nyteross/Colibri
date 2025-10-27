@@ -72,6 +72,34 @@ public class HummingbirdAgent : Agent
         UpdateNearestFlower();
     }
 
+    public override void OnActionReceived(float[] vectorAction)
+    {
+        if (frozen) return;
+
+        Vector3 move = new Vector3(vectorAction[0], vectorAction[1], vectorAction[2]);
+
+        rigidbody.AddForce(move * moveForce);
+
+        Vector3 rotationVector = transform.rotation.eulerAngles;
+
+        float pitchChange = vectorAction[3];
+        float yawChange = vectorAction[4];
+
+        smoothPitchChange = Mathf.MoveTowards(smoothPitchChange, pitchChange, 2f * Time.fixedDeltaTime);
+        smoothYawChange = Mathf.MoveTowards(smoothYawChange, yawChange, 2f * Time.fixedDeltaTime);
+
+        float pitch = rotationVector.x + smoothPitchChange * Time.fixedDeltaTime * pitchSpeed;
+        if (pitch > 180f) pitch -= 360f;
+        pitch = Mathf.Clamp(pitch, -MaxPitchAngle, MaxPitchAngle);
+
+        float yaw = rotationVector.y + smoothYawChange * Time.fixedDeltaTime * yawSpeed;
+
+        transform.rotation = Quaternion.Euler(pitch, yaw, 0f);
+
+        
+        
+    }
+
     private void MoveToSafeRandomPosition(bool inFrontOfFlower)
     {
         bool safePositionFound = false;
