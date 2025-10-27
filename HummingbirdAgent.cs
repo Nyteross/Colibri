@@ -96,8 +96,30 @@ public class HummingbirdAgent : Agent
 
         transform.rotation = Quaternion.Euler(pitch, yaw, 0f);
 
-        
-        
+
+
+    }
+    
+    public override void CollectObservations(VectorSensor sensor)
+    {
+
+        if (nearestFlower == null)
+        {
+            sensor.AddObservation(new float[10]);
+            return;
+        }
+
+        sensor.AddObservation(transform.localRotation.normalized);
+
+        Vector3 toFlower = nearestFlower.FlowerCenterPosition - beakTip.position;
+
+        sensor.AddObservation(toFlower.normalized);
+
+        sensor.AddObservation(Vector3.Dot(toFlower.normalized, -nearestFlower.FlowerUpVector.normalized));
+
+        sensor.AddObservation(Vector3.Dot(beakTip.forward.normalized, -nearestFlower.FlowerUpVector.normalized));
+
+        sensor.AddObservation(toFlower.magnitude / FlowerArea.AreaDiameter);
     }
 
     private void MoveToSafeRandomPosition(bool inFrontOfFlower)
