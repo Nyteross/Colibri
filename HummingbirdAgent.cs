@@ -45,7 +45,7 @@ public class HummingbirdAgent : Agent
 
     public override void Initialize()
     {
-        rigidbody = GetComponent<RigidBody>();
+        rigidbody = GetComponent<Rigidbody>();
         flowerArea = GetComponentInParent<FlowerArea>();
 
         if (!trainingMode) MaxStep = 0;
@@ -150,7 +150,7 @@ public class HummingbirdAgent : Agent
         actionsOut[1] = combined.y;
         actionsOut[2] = combined.z;
         actionsOut[3] = pitch;
-        actionsOut[4] = yawx;
+        actionsOut[4] = yaw;
     }
 
     public void FreezeAgent()
