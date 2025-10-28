@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
+using Unity.MLAgents.Actuators;
 
 public class HummingbirdAgent : Agent
 {
@@ -48,6 +49,12 @@ public class HummingbirdAgent : Agent
         rigidbody = GetComponent<Rigidbody>();
         flowerArea = GetComponentInParent<FlowerArea>();
 
+        if (flowerArea == null)
+        {
+            flowerArea = FindObjectOfType<FlowerArea>();
+        }
+
+
         if (!trainingMode) MaxStep = 0;
     }
 
@@ -74,16 +81,16 @@ public class HummingbirdAgent : Agent
         UpdateNearestFlower();
     }
 
-    public override void OnActionReceived(float[] vectorAction)
+    public override void OnActionReceived(ActionBuffers actions)
     {
         if (frozen) return;
 
-        Vector3 move = new Vector3(vectorAction[0], vectorAction[1], vectorAction[2]);
+        var vectorAction = actions.ContinuousActions;
 
+        Vector3 move = new Vector3(vectorAction[0], vectorAction[1], vectorAction[2]);
         rigidbody.AddForce(move * moveForce);
 
         Vector3 rotationVector = transform.rotation.eulerAngles;
-
         float pitchChange = vectorAction[3];
         float yawChange = vectorAction[4];
 
@@ -97,10 +104,8 @@ public class HummingbirdAgent : Agent
         float yaw = rotationVector.y + smoothYawChange * Time.fixedDeltaTime * yawSpeed;
 
         transform.rotation = Quaternion.Euler(pitch, yaw, 0f);
-
-
-
     }
+
 
     public override void CollectObservations(VectorSensor sensor)
     {
@@ -124,8 +129,11 @@ public class HummingbirdAgent : Agent
         sensor.AddObservation(toFlower.magnitude / FlowerArea.AreaDiameter);
     }
 
-    public override void Heuristic(float[] actionsOut)
+
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
+        var continuousActions = actionsOut.ContinuousActions;
+
         Vector3 forward = Vector3.zero;
         Vector3 left = Vector3.zero;
         Vector3 up = Vector3.zero;
@@ -135,22 +143,26 @@ public class HummingbirdAgent : Agent
         if (Input.GetKey(KeyCode.W)) forward = transform.forward;
         else if (Input.GetKey(KeyCode.S)) forward = -transform.forward;
 
-        if (Input.GetKey(KeyCode.A)) left = transform.right;
-        else if (Input.GetKey(KeyCode.D)) left = -transform.right;
+        if (Input.GetKey(KeyCode.A)) left = -transform.right;
+        else if (Input.GetKey(KeyCode.D)) left = transform.right;
 
         if (Input.GetKey(KeyCode.E)) up = transform.up;
         else if (Input.GetKey(KeyCode.C)) up = -transform.up;
 
-        if (Input.GetKey(KeyCode.UpArrow)) pitch = 1f;
-        else if (Input.GetKey(KeyCode.DownArrow)) pitch = -1f;
+        if (Input.GetKey(KeyCode.UpArrow)) pitch = -1f;
+        else if (Input.GetKey(KeyCode.DownArrow)) pitch = 1f;
+
+        if (Input.GetKey(KeyCode.LeftArrow)) yaw = -1f;
+        else if (Input.GetKey(KeyCode.RightArrow)) yaw = 1f;
+
 
         Vector3 combined = (forward + left + up).normalized;
 
-        actionsOut[0] = combined.x;
-        actionsOut[1] = combined.y;
-        actionsOut[2] = combined.z;
-        actionsOut[3] = pitch;
-        actionsOut[4] = yaw;
+        continuousActions[0] = combined.x;
+        continuousActions[1] = combined.y;
+        continuousActions[2] = combined.z;
+        continuousActions[3] = pitch;
+        continuousActions[4] = yaw;
     }
 
     public void FreezeAgent()
@@ -171,6 +183,13 @@ public class HummingbirdAgent : Agent
 
     private void MoveToSafeRandomPosition(bool inFrontOfFlower)
     {
+
+        if (flowerArea == null)
+        {
+            Debug.LogError("FlowerArea is null! Assign it in the Inspector or make Hummingbird a child of FlowerArea.");
+            return;
+        }
+
         bool safePositionFound = false;
         int attemptsRemaining = 100;
         Vector3 potentialPosition = Vector3.zero;
@@ -188,6 +207,8 @@ public class HummingbirdAgent : Agent
 
                 Vector3 toFlower = randomFlower.FlowerCenterPosition - potentialPosition;
                 potentialRotation = Quaternion.LookRotation(toFlower, Vector3.up);
+
+                safePositionFound = true;
             }
             else
             {
@@ -212,6 +233,7 @@ public class HummingbirdAgent : Agent
 
             transform.position = potentialPosition;
             transform.rotation = potentialRotation;
+        
         }
     }
 
@@ -291,12 +313,12 @@ public class HummingbirdAgent : Agent
         }
     }
 
-    private void FixedUpdate()
+   /* private void FixedUpdate()
     {
         if (nearestFlower != null && !nearestFlower.HasNectar)
         {
             UpdateNearestFlower();
         }
-    }
+    }*/
 
 }
