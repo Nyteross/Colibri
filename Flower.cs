@@ -56,7 +56,7 @@ public class Flower : MonoBehaviour
             flowerCollider.gameObject.SetActive(false);
             nectarCollider.gameObject.SetActive(false);
 
-            flowerMaterial.SetColor("_BaseColor", emptyFlowerColor);
+            flowerMaterial.SetColor("_Color", emptyFlowerColor);
         }
 
         return nectarTaken;
@@ -69,7 +69,7 @@ public class Flower : MonoBehaviour
         flowerCollider.gameObject.SetActive(true);
         nectarCollider.gameObject.SetActive(true);
 
-        flowerMaterial.SetColor("_BaseColor", fullFlowerColor);
+        flowerMaterial.SetColor("_Color", fullFlowerColor);
     }
 
     private void Awake()
